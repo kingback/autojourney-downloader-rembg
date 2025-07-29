@@ -1,8 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const archiver = require('archiver');
-const crypto = require('crypto');
-const { Octokit } = require('octokit');
+import fs from 'fs';
+import path from 'path';
+import archiver from 'archiver';
+import crypto from 'crypto';
+import { execSync } from 'child_process';
+import { Octokit } from 'octokit';
 
 const filesSrc = 'src/files';
 const outputDist = 'dist';
@@ -36,15 +37,11 @@ function zipFolder(sourcePath, outputPath) {
     });
 
     output.on('close', () => {
-      console.log(
-        `✅ 压缩完成: ${path.basename(sourcePath)} -> ${path.basename(
-          outputPath
-        )}`
-      );
+      console.log(`✅ 压缩完成: ${path.basename(sourcePath)} -> ${path.basename(outputPath)}`);
       resolve();
     });
 
-    archive.on('error', err => {
+    archive.on('error', (err) => {
       reject(err);
     });
 
@@ -66,9 +63,7 @@ function generateInfoJson(version, files) {
 
 // 获取GitHub仓库信息
 function getGitHubInfo() {
-  const remoteUrl = require('child_process')
-    .execSync('git remote get-url origin', { encoding: 'utf8' })
-    .trim();
+  const remoteUrl = execSync('git remote get-url origin', { encoding: 'utf8' }).trim();
   const match = remoteUrl.match(/github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?$/);
   if (!match) {
     throw new Error('无法解析GitHub仓库URL');
@@ -83,7 +78,7 @@ function getGitHubInfo() {
 async function createGitHubRelease(version, files, outputDir) {
   const githubToken = process.env.GH_TOKEN;
   if (!githubToken) {
-    console.log('⚠️  GITHUB_TOKEN 环境变量未设置，跳过GitHub release创建');
+    console.log('⚠️  GH_TOKEN 环境变量未设置，跳过GitHub release创建');
     return;
   }
 
@@ -112,7 +107,7 @@ async function createGitHubRelease(version, files, outputDir) {
           owner,
           repo,
           tag_name: `v${version}`,
-          name: `Release v${version}`,
+          name: `${version}`,
           body: `Release version ${version}`,
           draft: true,
           prerelease: false
@@ -160,10 +155,11 @@ async function createGitHubRelease(version, files, outputDir) {
     }
 
     console.log(`🎉 GitHub release创建完成: ${release.html_url}`);
+
   } catch (error) {
     console.error('❌ GitHub release创建失败:', error.message);
     if (error.status === 401) {
-      console.error('💡 请检查GITHUB_TOKEN是否正确设置');
+      console.error('💡 请检查GH_TOKEN是否正确设置');
     }
   }
 }
@@ -236,10 +232,11 @@ async function main() {
 
     // 创建GitHub release
     await createGitHubRelease(version, files, outputDir);
+
   } catch (error) {
     console.error('❌ 发布失败:', error.message);
     process.exit(1);
   }
 }
 
-main();
+main(); 

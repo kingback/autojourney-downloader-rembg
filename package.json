@@ -1,8 +1,9 @@
 {
   "name": "autojourney-downloader-rembg",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "release": "node ./scripts/release.js"
+    "release": "node ./scripts/release.mjs"
   },
   "dependencies": {
     "archiver": "^6.0.1",
