@@ -1,0 +1,11 @@
+{
+  "name": "autojourney-downloader-rembg",
+  "version": "0.0.1",
+  "scripts": {
+    "release": "node ./scripts/release.js"
+  },
+  "dependencies": {
+    "archiver": "^6.0.1",
+    "octokit": "^4.0.2"
+  }
+}
