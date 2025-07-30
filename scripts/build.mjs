@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
 import crypto from 'crypto';
+import { checkNodeVersion } from './version-check.mjs';
 
 const filesSrc = 'src/files';
 const outputDist = 'dist';
@@ -62,6 +63,9 @@ function generateInfoJson(version, files) {
 // 主构建函数
 async function build() {
   try {
+    // 检查 Node.js 版本
+    checkNodeVersion();
+    
     const version = getVersion();
     console.log(`🚀 开始构建版本: ${version}`);
 

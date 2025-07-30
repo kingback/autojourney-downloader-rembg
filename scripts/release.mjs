@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { Octokit } from 'octokit';
+import { checkNodeVersion } from './version-check.mjs';
 
 // 获取GitHub仓库信息
 function getGitHubInfo() {
@@ -173,6 +174,9 @@ function readBuildResult() {
 // 主发布函数
 async function release() {
   try {
+    // 检查 Node.js 版本
+    checkNodeVersion();
+    
     console.log('📖 读取构建结果...');
     const buildResult = readBuildResult();
     
